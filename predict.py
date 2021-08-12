@@ -6,6 +6,8 @@ import os
 import glob
 import re
 import json
+import base64
+import tempfile
 import numpy as np
 import tensorflow as tf
 
@@ -58,6 +60,17 @@ def predict_image(filename):
         dict(id=id, name=name, confidence=float(confidence))
         for id, name, confidence in label_vgg[0]
     ]
+
+
+def predict_base64_image(name, contents):
+    fd, file_path = tempfile.mkstemp()
+    with open(fd,'wb') as f:
+        f.write(base64.b64decode(contents))
+
+    classes = predict_image(file_path)
+    os.remove(file_path)
+    return {name:classes}
+        
 
 
 if __name__ == "__main__":
